@@ -281,7 +281,7 @@ const Dashboard = () => {
 
         {/* Main Content */}
         <div className="flex-1 p-6 overflow-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
             {/* Original Content Area */}
             <div className="bg-gray-900/50 backdrop-blur-lg rounded-xl border border-gray-800 shadow-lg p-6">
               <div className="mb-6">
@@ -335,13 +335,13 @@ const Dashboard = () => {
             </div>
 
             {/* Activity Card */}
-            <CardDetails
+            {/* <CardDetails
               metrics={metrics}
               dailyGoals={goals}
               onAddGoal={handleAddGoal}
               onToggleGoal={handleToggleGoal}
               onViewDetails={handleViewDetails}
-            />
+            /> */}
           </div>
         </div>
 
