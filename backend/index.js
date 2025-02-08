@@ -8,10 +8,19 @@ puppeteer.use(StealthPlugin());
 const express = require('express');
 const { Server } = require('socket.io');
 const http = require('http');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, { path: '/api' });
+const io = new Server(server, {
+    path: '/api',
+    cors: {
+        origin: "http://localhost:5000", // Your frontend URL
+        methods: ["GET", "POST"],
+        allowedHeaders: ["my-custom-header"],
+        credentials: true
+    }
+});
 
 // let pendingRequests = [
 //     { id: 1, query: "machine learning" },
@@ -159,23 +168,22 @@ const io = new Server(server, { path: '/api' });
 // //     console.log(`🚀 Server running on http://localhost:${PORT}`);
 // // });
 
+app.use(cors());
+
 io.on('connection', (socket) => {
     console.log('A new client connected');
 
     socket.on('message', (message) => {
         console.log('Received message from client:', message);
-        if (message === 'tableData') {
             let someData = {
                 command: "tableData",
                 data: [
                     { id: 1, subject: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
                     { id: 2, subject: "Physics", progress: "72%", status: "Need Focus", lastActivity: "1d ago" },
                     { id: 3, subject: "Chemistry", progress: "93%", status: "Excellent", lastActivity: "5h ago" },
-                ]
-            };
+                ]};
             console.log("Sending data to client:", someData);
             socket.send(JSON.stringify(someData));
-        }
     });
 
     socket.on('disconnect', () => {

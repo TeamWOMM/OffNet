@@ -26,23 +26,34 @@ import RouteTo from '@/hooks/routerTo';
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 const { io } = require("socket.io-client");
-const socket = io('http://localhost:5000/api');
+const socket = io('http://localhost:5000', {
+  path: '/api',
+  transports: ['websocket', 'polling'],
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+  autoConnect: true,
+  withCredentials: true
+});
 
+global.table = "";
 
-
-// client-side
+// Update the event listeners
 socket.on("connect", () => {
-  console.log(socket.id); // x8WIv7-mJelg7on_ALbx
+    console.log("Connected to server with ID:", socket.id);
+    socket.emit('message', 'requestData');
 });
+socket.on("message", (message)=>{
+  console.log(message);
 
-socket.on("disconnect", () => {
-  console.log(socket.id); // undefined
-});
+})
 
-
-
-
-
+socket.on("connect_error", (error) => {
+    console.error("Connection error details:", {
+        type: error.type,
+        message: error.message,
+        description: error.description
+    });
+}); 
 
 
 
