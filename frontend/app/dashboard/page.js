@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/kokonutui/tables";
-import RouteTo from '@/hooks/routerTo';
+import useRouteTo from '@/hooks/useRouterTo';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 function handleSearch(s){
@@ -247,30 +247,7 @@ const socket = io('http://localhost:5000', {
   withCredentials: true
 });
 
-global.table = "";
 
-// Update the event listeners
-socket.on("connect", () => {
-    console.log("Connected to server with ID:", socket.id);
-    socket.emit('message', 'requestData');
-});
-socket.on("message", (message)=>{
-  console.log(message);
-
-})
-
-socket.on("connect_error", (error) => {
-    console.error("Connection error details:", {
-        type: error.type,
-        message: error.message,
-        description: error.description
-    });
-}); 
-  console.log(socket.id); // x8WIv7-mJelg7on_ALbx
-
-socket.on("disconnect", () => {
-  console.log(socket.id); // undefined
-});
 
 const METRIC_COLORS = {
   Move: "#FF2D55",
@@ -278,98 +255,42 @@ const METRIC_COLORS = {
   Stand: "#007AFF",
 };
 
-function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDetails }) {
-  const [isHovering, setIsHovering] = useState(null);
-
-  return (
-    <div className="bg-gray-900/50 backdrop-blur-lg border border-gray-800 rounded-xl p-4 mb-4 hover:border-purple-500/50 transition-all duration-300">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="p-2 rounded-full bg-gray-800/50">
-          <Activity className="w-4 h-4 text-[#FF2D55]" />
-        </div>
-        <div>
-          <h3 className="text-sm font-semibold text-white">Activity</h3>
-          <p className="text-xs text-gray-400">Today's Progress</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        {metrics.map((metric) => (
-          <div
-            key={metric.label}
-            className="relative flex flex-col items-center"
-            onMouseEnter={() => setIsHovering(metric.label)}
-            onMouseLeave={() => setIsHovering(null)}
-          >
-            <div className="relative w-16 h-16">
-              <div className="absolute inset-0 rounded-full border-2 border-gray-800/50" />
-              <div
-                className={cn(
-                  "absolute inset-0 rounded-full border-2 transition-all duration-500",
-                  isHovering === metric.label && "scale-105",
-                )}
-                style={{
-                  borderColor: METRIC_COLORS[metric.label],
-                  clipPath: `polygon(0 0, 100% 0, 100% ${metric.trend}%, 0 ${metric.trend}%)`,
-                }}
-              />
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-sm font-bold text-white">{metric.value}</span>
-                <span className="text-xs text-gray-400">{metric.unit}</span>
-              </div>
-            </div>
-            <span className="mt-2 text-xs font-medium text-gray-300">{metric.label}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h4 className="flex items-center gap-2 text-sm font-medium text-gray-300">
-            <Target className="w-4 h-4" />
-            Today's Goals
-          </h4>
-          <button
-            onClick={onAddGoal}
-            className="p-1 rounded-full hover:bg-gray-800 transition-colors"
-          >
-            <Plus className="w-4 h-4 text-gray-400" />
-          </button>
-        </div>
-
-        <div className="space-y-2">
-          {dailyGoals.map((goal) => (
-            <button
-              key={goal.id}
-              onClick={() => onToggleGoal(goal.id)}
-              className="w-full flex items-center gap-2 p-2 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition-all"
-            >
-              <CheckCircle2
-                className={cn("w-4 h-4", goal.isCompleted ? "text-emerald-500" : "text-gray-600")}
-              />
-              <span className={cn(
-                "text-xs",
-                goal.isCompleted ? "text-gray-400 line-through" : "text-gray-300"
-              )}>
-                {goal.title}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <button
-        onClick={onViewDetails}
-        className="mt-4 w-full flex items-center justify-center gap-2 p-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
-      >
-        View Activity Details
-        <ArrowUpRight className="w-4 h-4" />
-      </button>
-    </div>
-  );
-}
 
 const Dashboard = () => {
+// I want to run this js when this comp mounts
+
+const [tableData, setTableData] = useState([]);
+let [mainContent, setMainContent] = useState();
+
+
+useEffect(() => {
+
+  setTimeout(()=>{
+    socket.emit('message', 'tableData');
+  },1000);
+  socket.on("connect", () => {
+    console.log("Connected to server with ID:", socket.id)
+  });
+
+  socket.on("message", (message) => {
+    try {
+      const parsedData = JSON.parse(message);
+      setTableData(parsedData.data);
+    } catch (error) {
+      console.error("Error parsing message:", error);
+    }
+  });
+
+  return () => {
+    socket.off("connect");
+    socket.off("message");
+  };
+}, []);
+
+useRouteTo('table', setMainContent, tableData);
+
+///////////////
+
   const router = useRouter();
   const [activeFeature, setActiveFeature] = useState('tutor');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -386,15 +307,14 @@ const Dashboard = () => {
     { label: "Stand", value: "10", trend: 83, unit: "hrs" },
   ]);
 
-  let [mainContent, setMainContent] = useState();
-  RouteTo('table', setMainContent);
+  console.log('table:', tableData);
 
   // Sample table data
-  const tableData = [
-    { id: 1, subject: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
-    { id: 2, subject: "Physics", progress: "72%", status: "Need Focus", lastActivity: "1d ago" },
-    { id: 3, subject: "Chemistry", progress: "93%", status: "Excellent", lastActivity: "5h ago" },
-  ];
+  // const tableData = [
+  //   { id: 1, subject: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
+  //   { id: 2, subject: "Physics", progress: "72%", status: "Need Focus", lastActivity: "1d ago" },
+  //   { id: 3, subject: "Chemistry", progress: "93%", status: "Excellent", lastActivity: "5h ago" },
+  // ];
 
   const features = [
     { id: 'tutor', name: 'AI Tutor', icon: '🎓' },
@@ -536,6 +456,99 @@ const Dashboard = () => {
     </div>
   );
 };
+
+
+function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDetails }) {
+  const [isHovering, setIsHovering] = useState(null);
+
+  return (
+    <div className="bg-gray-900/50 backdrop-blur-lg border border-gray-800 rounded-xl p-4 mb-4 hover:border-purple-500/50 transition-all duration-300">
+      <div className="flex items-center gap-2 mb-4">
+        <div className="p-2 rounded-full bg-gray-800/50">
+          <Activity className="w-4 h-4 text-[#FF2D55]" />
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold text-white">Activity</h3>
+          <p className="text-xs text-gray-400">Today's Progress</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        {metrics.map((metric) => (
+          <div
+            key={metric.label}
+            className="relative flex flex-col items-center"
+            onMouseEnter={() => setIsHovering(metric.label)}
+            onMouseLeave={() => setIsHovering(null)}
+          >
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-2 border-gray-800/50" />
+              <div
+                className={cn(
+                  "absolute inset-0 rounded-full border-2 transition-all duration-500",
+                  isHovering === metric.label && "scale-105",
+                )}
+                style={{
+                  borderColor: METRIC_COLORS[metric.label],
+                  clipPath: `polygon(0 0, 100% 0, 100% ${metric.trend}%, 0 ${metric.trend}%)`,
+                }}
+              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-sm font-bold text-white">{metric.value}</span>
+                <span className="text-xs text-gray-400">{metric.unit}</span>
+              </div>
+            </div>
+            <span className="mt-2 text-xs font-medium text-gray-300">{metric.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="flex items-center gap-2 text-sm font-medium text-gray-300">
+            <Target className="w-4 h-4" />
+            Today's Goals
+          </h4>
+          <button
+            onClick={onAddGoal}
+            className="p-1 rounded-full hover:bg-gray-800 transition-colors"
+          >
+            <Plus className="w-4 h-4 text-gray-400" />
+          </button>
+        </div>
+
+        <div className="space-y-2">
+          {dailyGoals.map((goal) => (
+            <button
+              key={goal.id}
+              onClick={() => onToggleGoal(goal.id)}
+              className="w-full flex items-center gap-2 p-2 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition-all"
+            >
+              <CheckCircle2
+                className={cn("w-4 h-4", goal.isCompleted ? "text-emerald-500" : "text-gray-600")}
+              />
+              <span className={cn(
+                "text-xs",
+                goal.isCompleted ? "text-gray-400 line-through" : "text-gray-300"
+              )}>
+                {goal.title}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <button
+        onClick={onViewDetails}
+        className="mt-4 w-full flex items-center justify-center gap-2 p-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
+      >
+        View Activity Details
+        <ArrowUpRight className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
 
 export default Dashboard;
 

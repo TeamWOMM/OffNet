@@ -175,15 +175,18 @@ io.on('connection', (socket) => {
 
     socket.on('message', (message) => {
         console.log('Received message from client:', message);
+        if (message == 'tableData'){
+
             let someData = {
                 command: "tableData",
                 data: [
-                    { id: 1, subject: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
-                    { id: 2, subject: "Physics", progress: "72%", status: "Need Focus", lastActivity: "1d ago" },
-                    { id: 3, subject: "Chemistry", progress: "93%", status: "Excellent", lastActivity: "5h ago" },
+                    { id: 1, resource: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
+                    { id: 2, resource: "Physiescsfrhbejfevgw", progress: "72%", status: "Need Focus", lastActivity: "1d ago" },
+                    { id: 3, resource: "Chemistry", progress: "93%", status: "Excellent", lastActivity: "5h ago" },
                 ]};
             console.log("Sending data to client:", someData);
             socket.send(JSON.stringify(someData));
+        }
     });
 
     socket.on('disconnect', () => {

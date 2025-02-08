@@ -25,13 +25,14 @@ import {
   }
 
   const tableData = [
-    { id: 1, subject: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
-    { id: 2, subject: "Physics", progress: "72%", status: "Need Focus", lastActivity: "1d ago" },
-    { id: 3, subject: "Chemistry", progress: "93%", status: "Excellent", lastActivity: "5h ago" },
+    { id: 1, resource: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
+    { id: 2, resource: "Physics", progress: "72%", status: "Need Focus", lastActivity: "1d ago" },
+    { id: 3, resource: "Chemistry", progress: "93%", status: "Excellent", lastActivity: "5h ago" },
   ];
 
 
-export default function _Table(){
+export default function _Table({ data=tableData }){
+  data = tableData;
     return (<>
     
     <div className="flex-1 p-6 overflow-auto">
@@ -48,7 +49,7 @@ export default function _Table(){
                   <Table>
                     <TableHeader>
                       <TableRow className="border-gray-800">
-                        <TableHead className="text-purple-400">Subject</TableHead>
+                        <TableHead className="text-purple-400">Resource</TableHead>
                         <TableHead className="text-purple-400">Progress</TableHead>
                         <TableHead className="text-purple-400">Status</TableHead>
                         <TableHead className="text-purple-400">Last Activity</TableHead>
@@ -57,7 +58,7 @@ export default function _Table(){
                     <TableBody>
                       {tableData.map((row) => (
                         <TableRow key={row.id} className="border-gray-800">
-                          <TableCell className="font-medium text-gray-300">{row.subject}</TableCell>
+                          <TableCell className="font-medium text-gray-300">{row.resource}</TableCell>
                           <TableCell className="text-gray-400">{row.progress}</TableCell>
                           <TableCell className="text-gray-400">{row.status}</TableCell>
                           <TableCell className="text-gray-400">{row.lastActivity}</TableCell>
