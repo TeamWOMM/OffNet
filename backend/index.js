@@ -180,9 +180,9 @@ io.on('connection', (socket) => {
             let someData = {
                 command: "tableData",
                 data: [
-                    { id: 1, resource: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
-                    { id: 2, resource: "Physiescsfrhbejfevgw", progress: "72%", status: "Need Focus", lastActivity: "1d ago" },
-                    { id: 3, resource: "Chemistry", progress: "93%", status: "Excellent", lastActivity: "5h ago" },
+                    { id: 1, resource: "Mathematics",  link: "./devrebgrtg.pdf" },
+                    { id: 2, resource: "Physiescsfrhbejfevgw",link: "./fbecderh3.pdf"  },
+                    { id: 3, resource: "Chemistry", link: "/jqwfbrh3.pdf" },
                 ]};
             console.log("Sending data to client:", someData);
             socket.send(JSON.stringify(someData));

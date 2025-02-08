@@ -18,19 +18,19 @@ export default function useRouteTo(uri, setState, data) {
                             <Table>
                                 <TableHeader>
                                     <TableRow className="border-gray-800">
-                                        <TableHead className="text-purple-400">Subject</TableHead>
-                                        <TableHead className="text-purple-400">Progress</TableHead>
-                                        <TableHead className="text-purple-400">Status</TableHead>
-                                        <TableHead className="text-purple-400">Last Activity</TableHead>
+                                        <TableHead className="text-purple-400">Resource-Id</TableHead>
+                                        <TableHead className="text-purple-400">Resource</TableHead>
+                                        {/* <TableHead className="text-purple-400">Status</TableHead> */}
+                                        <TableHead className="text-purple-400">Link</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {data.map((row) => (
                                         <TableRow key={row.id} className="border-gray-800">
-                                            <TableCell className="font-medium text-gray-300">{row.subject}</TableCell>
-                                            <TableCell className="text-gray-400">{row.progress}</TableCell>
-                                            <TableCell className="text-gray-400">{row.status}</TableCell>
-                                            <TableCell className="text-gray-400">{row.lastActivity}</TableCell>
+                                            <TableCell className="font-medium text-gray-300">Res-Id:{row.id}ad{row.id+1}m{row.id*2}</TableCell>
+                                            <TableCell className="text-gray-400">{row.resource}</TableCell>
+                                            {/* <TableCell className="text-gray-400">{row.status}</TableCell> */}
+                                            <TableCell className="text-gray-400"><a href="{row.link}">{row.link}</a></TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
