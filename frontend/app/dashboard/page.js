@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Coins, MessageSquare, X, Activity, ArrowUpRight, Plus, Target, CheckCircle2 } from 'lucide-react';
-
+import Table from '@/app/comps/table';
 // Utility function to replace cn
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
@@ -161,6 +161,78 @@ const INITIAL_GOALS = [
   { id: "3", title: "Drink 2L Water", isCompleted: true },
 ];
 
+
+//
+// for table
+const users = [
+  { id: 1, name: "John Doe", email: "john@example.com", role: "Admin", status: "Active", lastLogin: "2023-04-01" },
+  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "User", status: "Active", lastLogin: "2023-04-05" },
+  { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "User", status: "Inactive", lastLogin: "2023-03-20" },
+  // Add more user data here...
+]
+
+// Product data
+const products = [
+  { id: 1, name: "Laptop", category: "Electronics", price: 999.99, stock: 50 },
+  { id: 2, name: "Smartphone", category: "Electronics", price: 699.99, stock: 100 },
+  { id: 3, name: "Headphones", category: "Accessories", price: 149.99, stock: 200 },
+  // Add more product data here...
+]
+
+// User table columns
+const userColumns = [
+  { header: "Name", accessor: "name" },
+  { header: "Email", accessor: "email" },
+  { header: "Role", accessor: "role" },
+  {
+    header: "Status",
+    accessor: "status",
+    render: (value) => (
+      <span
+        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
+          value === "Active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+        }`}
+      >
+        {value}
+      </span>
+    ),
+  },
+  {
+    header: "Last Login",
+    accessor: "lastLogin",
+    render: (value) => new Date(value).toLocaleDateString(),
+  },
+]
+
+// Product table columns
+const productColumns = [
+  { header: "Name", accessor: "name" },
+  { header: "Category", accessor: "category" },
+  {
+    header: "Price",
+    accessor: "price",
+    render: (value) => `$${value.toFixed(2)}`,
+  },
+  {
+    header: "Stock",
+    accessor: "stock",
+    render: (value) => (
+      <div className="flex items-center">
+        <div className="w-16 bg-gray-200 rounded-full h-2.5">
+          <div
+            className="bg-blue-600 h-2.5 rounded-full"
+            style={{ width: `${Math.min((value / 200) * 100, 100)}%` }}
+          ></div>
+        </div>
+        <span className="ml-2">{value}</span>
+      </div>
+    ),
+  },
+]
+
+//
+
+
 const Dashboard = () => {
   const router = useRouter();
   const [activeFeature, setActiveFeature] = useState('tutor');
@@ -280,9 +352,22 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-6 overflow-auto">
+        <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-8">Table Component Examples</h1>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold mb-4">User List</h2>
+        <Table data={users} columns={userColumns} className="shadow-md rounded-lg" itemsPerPage={5} />
+      </section>
+
+      <section className="mb-12">
+        <h2 className="text-2xl font-bold mb-4">Product List</h2>
+        <Table data={products} columns={productColumns} className="shadow-md rounded-lg" itemsPerPage={5} />
+      </section>
+    </div>
+        {/* <div className="flex-1 p-6 overflow-auto">
           <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-            {/* Original Content Area */}
+            {/* Original Content Area 
             <div className="bg-gray-900/50 backdrop-blur-lg rounded-xl border border-gray-800 shadow-lg p-6">
               <div className="mb-6">
                 <h1 className="text-2xl font-bold text-white">
@@ -334,16 +419,15 @@ const Dashboard = () => {
               </button>
             </div>
 
-            {/* Activity Card */}
-            {/* <CardDetails
+             <CardDetails
               metrics={metrics}
               dailyGoals={goals}
               onAddGoal={handleAddGoal}
               onToggleGoal={handleToggleGoal}
               onViewDetails={handleViewDetails}
-            /> */}
+            /> 
           </div>
-        </div>
+        </div> */}
 
         {/* Right Chat History Sidebar */}
         <div className={`bg-gray-900/50 backdrop-blur-lg border-l border-gray-800 w-72 transform transition-all duration-300 ${isChatOpen ? 'translate-x-0' : 'translate-x-full'}`}>
