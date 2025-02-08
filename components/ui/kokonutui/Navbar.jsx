@@ -1,4 +1,6 @@
+'useclient';
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -173,6 +175,10 @@ const Navbar = () => {
           </div>
         )}
       </div>
+      <Link
+      href="/dashboard"
+      className="text-gray-800 hover:text-blue-600 px-4 py-2 rounded-lg transition-colors duration-300"
+      >Dashboard</Link>
     </nav>
   );
 };
