@@ -17,6 +17,12 @@ import {
     TableHeader,
     TableRow,
   } from "@/components/ui/kokonutui/tables";
+  import SearchBar from '@/components/ui/kokonutui/SearchComponent';
+
+
+  function handleSearch(){
+    console.log("Search");
+  }
 
   const tableData = [
     { id: 1, subject: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
@@ -61,6 +67,9 @@ export default function _Table(){
                   </Table>
                 </div>
               </div>
+              <div className="py-6 animate-fade-in">
+              <SearchBar onSearch={handleSearch} />
+          </div>
             </div>
     
 

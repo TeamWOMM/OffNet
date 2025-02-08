@@ -470,10 +470,6 @@ const Dashboard = () => {
 
         {/* Main Content */}
         {mainContent}
-
-        <div className="py-6 animate-fade-in">
-              <SearchBar onSearch={handleSearch} />
-            </div>
         {/* Right Sidebar */}
         <div className="w-80 bg-gray-900/50 backdrop-blur-lg border-l border-gray-800 p-4">
           {/* Activity Card */}
