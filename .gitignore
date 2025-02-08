@@ -1,3 +1,4 @@
+
 # Logs
 logs
 *.log
@@ -24,3 +25,6 @@ dist-ssr
 *.sw?
 
 .vercel
+
+backend/node_modules
+.idea/workspace.xml
