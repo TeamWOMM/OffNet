@@ -2,9 +2,26 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Coins, MessageSquare, X, Activity, ArrowUpRight, Plus, Target, CheckCircle2 } from 'lucide-react';
-import Table from '@/app/comps/table';
-// Utility function to replace cn
+import {
+  Coins,
+  MessageSquare,
+  X,
+  Activity,
+  ArrowUpRight,
+  Plus,
+  Target,
+  CheckCircle2,
+  Table as TableIcon
+} from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/kokonutui/tables";
+
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 const METRIC_COLORS = {
@@ -13,45 +30,24 @@ const METRIC_COLORS = {
   Stand: "#007AFF",
 };
 
-function CardDetails({
-  category = "Activity",
-  title = "Today's Progress",
-  metrics = [],
-  dailyGoals = [],
-  onAddGoal,
-  onToggleGoal,
-  onViewDetails,
-  className,
-}) {
+function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDetails }) {
   const [isHovering, setIsHovering] = useState(null);
 
-  const handleGoalToggle = (goalId) => {
-    onToggleGoal?.(goalId);
-  };
-
   return (
-    <div
-      className={cn(
-        "relative h-full rounded-3xl p-6",
-        "bg-gray-900/50 backdrop-blur-lg",
-        "border border-gray-800",
-        "hover:border-purple-500/50",
-        "transition-all duration-300",
-        className,
-      )}
-    >
+    <div className="bg-gray-900/50 backdrop-blur-lg border border-gray-800 rounded-xl p-4 mb-4 hover:border-purple-500/50 transition-all duration-300">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-2 mb-4">
         <div className="p-2 rounded-full bg-gray-800/50">
-          <Activity className="w-5 h-5 text-[#FF2D55]" />
+          <Activity className="w-4 h-4 text-[#FF2D55]" />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-white">{title}</h3>
-          <p className="text-sm text-gray-400">{category}</p>
+          <h3 className="text-sm font-semibold text-white">Activity</h3>
+          <p className="text-xs text-gray-400">Today's Progress</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      {/* Metrics */}
+      <div className="grid grid-cols-3 gap-2 mb-4">
         {metrics.map((metric) => (
           <div
             key={metric.label}
@@ -59,11 +55,11 @@ function CardDetails({
             onMouseEnter={() => setIsHovering(metric.label)}
             onMouseLeave={() => setIsHovering(null)}
           >
-            <div className="relative w-24 h-24">
-              <div className="absolute inset-0 rounded-full border-4 border-gray-800/50" />
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-2 border-gray-800/50" />
               <div
                 className={cn(
-                  "absolute inset-0 rounded-full border-4 transition-all duration-500",
+                  "absolute inset-0 rounded-full border-2 transition-all duration-500",
                   isHovering === metric.label && "scale-105",
                 )}
                 style={{
@@ -72,175 +68,86 @@ function CardDetails({
                 }}
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-xl font-bold text-white">{metric.value}</span>
+                <span className="text-sm font-bold text-white">{metric.value}</span>
                 <span className="text-xs text-gray-400">{metric.unit}</span>
               </div>
             </div>
-            <span className="mt-3 text-sm font-medium text-gray-300">{metric.label}</span>
-            <span className="text-xs text-gray-500">{metric.trend}%</span>
+            <span className="mt-2 text-xs font-medium text-gray-300">{metric.label}</span>
           </div>
         ))}
       </div>
 
-      <div className="mt-8 space-y-6">
-        <div className="h-px bg-gray-800" />
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h4 className="flex items-center gap-2 text-sm font-medium text-gray-300">
-              <Target className="w-4 h-4" />
-              Today's Goals
-            </h4>
-            <button
-              type="button"
-              onClick={onAddGoal}
-              className="p-1.5 rounded-full hover:bg-gray-800 transition-colors"
-            >
-              <Plus className="w-4 h-4 text-gray-400" />
-            </button>
-          </div>
-
-          <div className="space-y-2">
-            {dailyGoals.map((goal) => (
-              <button
-                type="button"
-                key={goal.id}
-                onClick={() => handleGoalToggle(goal.id)}
-                className={cn(
-                  "w-full flex items-center gap-3 p-3 rounded-xl",
-                  "bg-gray-900/50",
-                  "border border-gray-800/50",
-                  "hover:border-purple-500/50",
-                  "transition-all",
-                )}
-              >
-                <CheckCircle2
-                  className={cn("w-5 h-5", goal.isCompleted ? "text-emerald-500" : "text-gray-600")}
-                />
-                <span
-                  className={cn(
-                    "text-sm text-left",
-                    goal.isCompleted
-                      ? "text-gray-400 line-through"
-                      : "text-gray-300",
-                  )}
-                >
-                  {goal.title}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="pt-4 border-t border-gray-800">
+      {/* Goals Section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="flex items-center gap-2 text-sm font-medium text-gray-300">
+            <Target className="w-4 h-4" />
+            Today's Goals
+          </h4>
           <button
-            type="button"
-            onClick={onViewDetails}
-            className="inline-flex items-center gap-2 text-sm font-medium
-              text-gray-400 hover:text-white
-              transition-colors duration-200"
+            onClick={onAddGoal}
+            className="p-1 rounded-full hover:bg-gray-800 transition-colors"
           >
-            View Activity Details
-            <ArrowUpRight className="w-4 h-4" />
+            <Plus className="w-4 h-4 text-gray-400" />
           </button>
         </div>
+
+        <div className="space-y-2">
+          {dailyGoals.map((goal) => (
+            <button
+              key={goal.id}
+              onClick={() => onToggleGoal(goal.id)}
+              className="w-full flex items-center gap-2 p-2 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition-all"
+            >
+              <CheckCircle2
+                className={cn("w-4 h-4", goal.isCompleted ? "text-emerald-500" : "text-gray-600")}
+              />
+              <span className={cn(
+                "text-xs",
+                goal.isCompleted ? "text-gray-400 line-through" : "text-gray-300"
+              )}>
+                {goal.title}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* View Details Button */}
+      <button
+        onClick={onViewDetails}
+        className="mt-4 w-full flex items-center justify-center gap-2 p-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
+      >
+        View Activity Details
+        <ArrowUpRight className="w-4 h-4" />
+      </button>
     </div>
   );
 }
-
-const INITIAL_METRICS = [
-  { label: "Move", value: "420", trend: 85, unit: "cal" },
-  { label: "Exercise", value: "35", trend: 70, unit: "min" },
-  { label: "Stand", value: "10", trend: 83, unit: "hrs" },
-];
-
-const INITIAL_GOALS = [
-  { id: "1", title: "30min Morning Yoga", isCompleted: true },
-  { id: "2", title: "10k Steps", isCompleted: false },
-  { id: "3", title: "Drink 2L Water", isCompleted: true },
-];
-
-
-//
-// for table
-const users = [
-  { id: 1, name: "John Doe", email: "john@example.com", role: "Admin", status: "Active", lastLogin: "2023-04-01" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "User", status: "Active", lastLogin: "2023-04-05" },
-  { id: 3, name: "Bob Johnson", email: "bob@example.com", role: "User", status: "Inactive", lastLogin: "2023-03-20" },
-  // Add more user data here...
-]
-
-// Product data
-const products = [
-  { id: 1, name: "Laptop", category: "Electronics", price: 999.99, stock: 50 },
-  { id: 2, name: "Smartphone", category: "Electronics", price: 699.99, stock: 100 },
-  { id: 3, name: "Headphones", category: "Accessories", price: 149.99, stock: 200 },
-  // Add more product data here...
-]
-
-// User table columns
-const userColumns = [
-  { header: "Name", accessor: "name" },
-  { header: "Email", accessor: "email" },
-  { header: "Role", accessor: "role" },
-  {
-    header: "Status",
-    accessor: "status",
-    render: (value) => (
-      <span
-        className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-          value === "Active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-        }`}
-      >
-        {value}
-      </span>
-    ),
-  },
-  {
-    header: "Last Login",
-    accessor: "lastLogin",
-    render: (value) => new Date(value).toLocaleDateString(),
-  },
-]
-
-// Product table columns
-const productColumns = [
-  { header: "Name", accessor: "name" },
-  { header: "Category", accessor: "category" },
-  {
-    header: "Price",
-    accessor: "price",
-    render: (value) => `$${value.toFixed(2)}`,
-  },
-  {
-    header: "Stock",
-    accessor: "stock",
-    render: (value) => (
-      <div className="flex items-center">
-        <div className="w-16 bg-gray-200 rounded-full h-2.5">
-          <div
-            className="bg-blue-600 h-2.5 rounded-full"
-            style={{ width: `${Math.min((value / 200) * 100, 100)}%` }}
-          ></div>
-        </div>
-        <span className="ml-2">{value}</span>
-      </div>
-    ),
-  },
-]
-
-//
-
 
 const Dashboard = () => {
   const router = useRouter();
   const [activeFeature, setActiveFeature] = useState('tutor');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [content, setContent] = useState([]);
   const [isChatOpen, setIsChatOpen] = useState(true);
-  const [goals, setGoals] = useState(INITIAL_GOALS);
-  const [metrics, setMetrics] = useState(INITIAL_METRICS);
+  const [goals, setGoals] = useState([
+    { id: "1", title: "30min Morning Yoga", isCompleted: true },
+    { id: "2", title: "10k Steps", isCompleted: false },
+    { id: "3", title: "Drink 2L Water", isCompleted: true },
+  ]);
+
+  const [metrics] = useState([
+    { label: "Move", value: "420", trend: 85, unit: "cal" },
+    { label: "Exercise", value: "35", trend: 70, unit: "min" },
+    { label: "Stand", value: "10", trend: 83, unit: "hrs" },
+  ]);
+
+  // Sample table data
+  const tableData = [
+    { id: 1, subject: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
+    { id: 2, subject: "Physics", progress: "72%", status: "Need Focus", lastActivity: "1d ago" },
+    { id: 3, subject: "Chemistry", progress: "93%", status: "Excellent", lastActivity: "5h ago" },
+  ];
 
   const features = [
     { id: 'tutor', name: 'AI Tutor', icon: '🎓' },
@@ -248,50 +155,18 @@ const Dashboard = () => {
     { id: 'pdf', name: 'Content PDF', icon: '📄' }
   ];
 
-  const handleGenerate = async () => {
-    setIsGenerating(true);
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ feature: activeFeature }),
-      });
-      
-      const data = await response.json();
-      setContent(data.content);
-    } catch (error) {
-      console.error('Generation failed:', error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const getFeatureContent = () => {
-    switch (activeFeature) {
-      case 'tutor':
-        return 'AI Tutor will help you learn any subject interactively';
-      case 'notebook':
-        return 'Generate comprehensive study notes automatically';
-      case 'pdf':
-        return 'Convert and organize your content into PDF format';
-      default:
-        return 'Select a feature to get started';
-    }
-  };
-
   const handleToggleGoal = (goalId) => {
-    setGoals((prev) => prev.map((goal) => (goal.id === goalId ? { ...goal, isCompleted: !goal.isCompleted } : goal)));
+    setGoals(prev => prev.map(goal => 
+      goal.id === goalId ? { ...goal, isCompleted: !goal.isCompleted } : goal
+    ));
   };
 
   const handleAddGoal = () => {
-    const newGoal = {
-      id: `goal-${goals.length + 1}`,
-      title: `New Goal ${goals.length + 1}`,
-      isCompleted: false,
-    };
-    setGoals((prev) => [...prev, newGoal]);
+    setGoals(prev => [...prev, {
+      id: `${prev.length + 1}`,
+      title: `New Goal ${prev.length + 1}`,
+      isCompleted: false
+    }]);
   };
 
   const handleViewDetails = () => {
@@ -300,15 +175,16 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse -top-48 -left-48"></div>
-        <div className="absolute w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse -bottom-48 -right-48"></div>
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-3xl animate-pulse -top-48 -left-48" />
+        <div className="absolute w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl animate-pulse -bottom-48 -right-48" />
+        <div className="absolute w-[800px] h-[800px] bg-purple-500/5 rounded-full blur-3xl animate-pulse top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
       </div>
 
       {/* Header */}
       <header className="bg-gray-900/50 backdrop-blur-lg border-b border-gray-800 p-4 relative z-10">
-        <nav className="flex justify-between items-center">
+        <nav className="flex justify-between items-center max-w-7xl mx-auto">
           <Link href="/" className="text-xl font-bold text-white hover:text-purple-400 transition-colors duration-300">
             OffNet
           </Link>
@@ -317,12 +193,6 @@ const Dashboard = () => {
               <Coins className="text-purple-400 w-5 h-5 mr-2" />
               <span className="font-semibold text-white">2,500</span>
             </div>
-            <button 
-              onClick={() => router.push('/')}
-              className="px-4 py-2 text-gray-400 hover:text-white transition-colors duration-300"
-            >
-              Back to Home
-            </button>
           </div>
         </nav>
       </header>
@@ -352,99 +222,69 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content */}
-        <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-8">Table Component Examples</h1>
-
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-4">User List</h2>
-        <Table data={users} columns={userColumns} className="shadow-md rounded-lg" itemsPerPage={5} />
-      </section>
-
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-4">Product List</h2>
-        <Table data={products} columns={productColumns} className="shadow-md rounded-lg" itemsPerPage={5} />
-      </section>
-    </div>
-        {/* <div className="flex-1 p-6 overflow-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-            {/* Original Content Area 
-            <div className="bg-gray-900/50 backdrop-blur-lg rounded-xl border border-gray-800 shadow-lg p-6">
-              <div className="mb-6">
-                <h1 className="text-2xl font-bold text-white">
-                  {features.find(f => f.id === activeFeature)?.name}
-                </h1>
-                <p className="text-gray-400">
-                  {getFeatureContent()}
-                </p>
-              </div>
-
-              <div className="bg-gray-800/30 rounded-lg p-6 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {content.length > 0 ? (
-                    content.map((item, index) => (
-                      <div
-                        key={index}
-                        className="group bg-gray-900/50 p-4 rounded-lg border border-gray-800 transition-all duration-300 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/20"
-                      >
-                        <h3 className="font-semibold mb-2 text-purple-400 group-hover:text-purple-300">{item.title}</h3>
-                        <p className="text-gray-400 group-hover:text-gray-300">{item.content}</p>
-                      </div>
-                    ))
-                  ) : (
-                    [1, 2, 3].map((item) => (
-                      <div
-                        key={item}
-                        className="group bg-gray-900/50 p-4 rounded-lg border border-gray-800 transition-all duration-300 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/20"
-                        >
-                        <h3 className="font-semibold mb-2 text-purple-400 group-hover:text-purple-300">Content Display {item}</h3>
-                        <p className="text-gray-400 group-hover:text-gray-300">
-                          Click generate to create personalized content.
-                        </p>
-                      </div>
-                    ))
-                  )}
+        <div className="flex-1 p-6 overflow-auto">
+          <div className="max-w-6xl mx-auto space-y-6">
+            {/* Dark themed table */}
+            <div className="bg-gray-900/50 backdrop-blur-lg rounded-xl border border-gray-800 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <TableIcon className="w-5 h-5 text-purple-400" />
+                  <h2 className="text-xl font-bold text-white">Learning Progress</h2>
                 </div>
               </div>
-
-              <button
-                onClick={handleGenerate}
-                disabled={isGenerating}
-                className={`w-full py-3 rounded-lg font-semibold transition-all duration-500
-                  ${isGenerating
-                    ? 'bg-purple-500/50 cursor-wait'
-                    : 'bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 hover:border-purple-500'
-                  } text-white shadow-lg hover:shadow-purple-500/20`}
-              >
-                {isGenerating ? 'Generating...' : 'Generate Content'}
-              </button>
+              
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-gray-800">
+                    <TableHead className="text-purple-400">Subject</TableHead>
+                    <TableHead className="text-purple-400">Progress</TableHead>
+                    <TableHead className="text-purple-400">Status</TableHead>
+                    <TableHead className="text-purple-400">Last Activity</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {tableData.map((row) => (
+                    <TableRow key={row.id} className="border-gray-800">
+                      <TableCell className="font-medium text-gray-300">{row.subject}</TableCell>
+                      <TableCell className="text-gray-400">{row.progress}</TableCell>
+                      <TableCell className="text-gray-400">{row.status}</TableCell>
+                      <TableCell className="text-gray-400">{row.lastActivity}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
-
-             <CardDetails
-              metrics={metrics}
-              dailyGoals={goals}
-              onAddGoal={handleAddGoal}
-              onToggleGoal={handleToggleGoal}
-              onViewDetails={handleViewDetails}
-            /> 
           </div>
-        </div> */}
+        </div>
 
-        {/* Right Chat History Sidebar */}
-        <div className={`bg-gray-900/50 backdrop-blur-lg border-l border-gray-800 w-72 transform transition-all duration-300 ${isChatOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-          <div className="p-4">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-white flex items-center">
-                <MessageSquare className="w-5 h-5 mr-2 text-purple-400" />
+        {/* Right Sidebar */}
+        <div className="w-80 bg-gray-900/50 backdrop-blur-lg border-l border-gray-800 p-4">
+          {/* Activity Card */}
+          <ActivityCard
+            metrics={metrics}
+            dailyGoals={goals}
+            onAddGoal={handleAddGoal}
+            onToggleGoal={handleToggleGoal}
+            onViewDetails={handleViewDetails}
+          />
+
+          {/* Chat History */}
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-purple-400" />
                 Chat History
-              </h2>
+              </h3>
               <button 
                 onClick={() => setIsChatOpen(!isChatOpen)}
-                className="text-gray-400 hover:text-white transition-colors duration-300 rounded-lg"
+                className="text-gray-400 hover:text-white transition-colors duration-300"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="space-y-3">
+            
+            {/* Chat Items */}
+            <div className="space-y-2">
               {[
                 {
                   id: 1,
@@ -469,8 +309,8 @@ const Dashboard = () => {
                   key={chat.id}
                   className="p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 border border-gray-800 hover:border-purple-500/50 transition-all duration-300 cursor-pointer group"
                 >
-                  <p className="font-medium text-gray-300 group-hover:text-white mb-1">{chat.question}</p>
-                  <div className="flex justify-between text-sm">
+                  <p className="font-medium text-sm text-gray-300 group-hover:text-white mb-1">{chat.question}</p>
+                  <div className="flex justify-between text-xs">
                     <span className="text-purple-400 group-hover:text-purple-300">{chat.feature}</span>
                     <span className="text-gray-500 group-hover:text-gray-400">{chat.timestamp}</span>
                   </div>
