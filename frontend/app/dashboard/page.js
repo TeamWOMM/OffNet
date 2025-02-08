@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import SearchBar from '../../components/ui/kokonutui/SearchComponent';
+
 import {
   Coins,
   MessageSquare,
