@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import SearchBar from '../../components/ui/kokonutui/SearchComponent';
 import {
   Coins,
   MessageSquare,
@@ -24,122 +25,21 @@ import {
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
-const METRIC_COLORS = {
-  Move: "#FF2D55",
-  Exercise: "#2CD758",
-  Stand: "#007AFF",
-};
-
-function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDetails }) {
-  const [isHovering, setIsHovering] = useState(null);
-
-  return (
-    <div className="bg-gray-900/50 backdrop-blur-lg border border-gray-800 rounded-xl p-4 mb-4 hover:border-purple-500/50 transition-all duration-300">
-      {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className="p-2 rounded-full bg-gray-800/50">
-          <Activity className="w-4 h-4 text-[#FF2D55]" />
-        </div>
-        <div>
-          <h3 className="text-sm font-semibold text-white">Activity</h3>
-          <p className="text-xs text-gray-400">Today's Progress</p>
-        </div>
-      </div>
-
-      {/* Metrics */}
-      <div className="grid grid-cols-3 gap-2 mb-4">
-        {metrics.map((metric) => (
-          <div
-            key={metric.label}
-            className="relative flex flex-col items-center"
-            onMouseEnter={() => setIsHovering(metric.label)}
-            onMouseLeave={() => setIsHovering(null)}
-          >
-            <div className="relative w-16 h-16">
-              <div className="absolute inset-0 rounded-full border-2 border-gray-800/50" />
-              <div
-                className={cn(
-                  "absolute inset-0 rounded-full border-2 transition-all duration-500",
-                  isHovering === metric.label && "scale-105",
-                )}
-                style={{
-                  borderColor: METRIC_COLORS[metric.label],
-                  clipPath: `polygon(0 0, 100% 0, 100% ${metric.trend}%, 0 ${metric.trend}%)`,
-                }}
-              />
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-sm font-bold text-white">{metric.value}</span>
-                <span className="text-xs text-gray-400">{metric.unit}</span>
-              </div>
-            </div>
-            <span className="mt-2 text-xs font-medium text-gray-300">{metric.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Goals Section */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h4 className="flex items-center gap-2 text-sm font-medium text-gray-300">
-            <Target className="w-4 h-4" />
-            Today's Goals
-          </h4>
-          <button
-            onClick={onAddGoal}
-            className="p-1 rounded-full hover:bg-gray-800 transition-colors"
-          >
-            <Plus className="w-4 h-4 text-gray-400" />
-          </button>
-        </div>
-
-        <div className="space-y-2">
-          {dailyGoals.map((goal) => (
-            <button
-              key={goal.id}
-              onClick={() => onToggleGoal(goal.id)}
-              className="w-full flex items-center gap-2 p-2 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition-all"
-            >
-              <CheckCircle2
-                className={cn("w-4 h-4", goal.isCompleted ? "text-emerald-500" : "text-gray-600")}
-              />
-              <span className={cn(
-                "text-xs",
-                goal.isCompleted ? "text-gray-400 line-through" : "text-gray-300"
-              )}>
-                {goal.title}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* View Details Button */}
-      <button
-        onClick={onViewDetails}
-        className="mt-4 w-full flex items-center justify-center gap-2 p-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
-      >
-        View Activity Details
-        <ArrowUpRight className="w-4 h-4" />
-      </button>
-    </div>
-  );
-}
-
 const Dashboard = () => {
   const router = useRouter();
   const [activeFeature, setActiveFeature] = useState('tutor');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [goals, setGoals] = useState([
-    { id: "1", title: "30min Morning Yoga", isCompleted: true },
-    { id: "2", title: "10k Steps", isCompleted: false },
-    { id: "3", title: "Drink 2L Water", isCompleted: true },
+    { id: "1", title: "Chemical Equations", isCompleted: true },
+    { id: "2", title: "Integration Homework", isCompleted: false },
+    { id: "3", title: "Environment Lecture", isCompleted: false },
   ]);
 
   const [metrics] = useState([
-    { label: "Move", value: "420", trend: 85, unit: "cal" },
-    { label: "Exercise", value: "35", trend: 70, unit: "min" },
-    { label: "Stand", value: "10", trend: 83, unit: "hrs" },
+    { label: "Mathematics", value: "78", trend: 85, unit: "%" },
+    { label: "Physics", value: "89", trend: 70, unit: "%" },
+    { label: "Chemistry", value: "68", trend: 83, unit: "%" },
   ]);
 
   // Sample table data
@@ -151,7 +51,7 @@ const Dashboard = () => {
 
   const features = [
     { id: 'tutor', name: 'AI Tutor', icon: '🎓' },
-    { id: 'notebook', name: 'Notebook Generation', icon: '📓' },
+    { id: 'notebook', name: 'Quiz Statistics', icon: '📓' },
     { id: 'pdf', name: 'Content PDF', icon: '📄' }
   ];
 
@@ -164,13 +64,17 @@ const Dashboard = () => {
   const handleAddGoal = () => {
     setGoals(prev => [...prev, {
       id: `${prev.length + 1}`,
-      title: `New Goal ${prev.length + 1}`,
+      title: `Next Week ${prev.length + 1}`,
       isCompleted: false
     }]);
   };
 
   const handleViewDetails = () => {
     console.log("Viewing details");
+  };
+
+  const handleSearch = (query) => {
+    console.log('Searching for:', query);
   };
 
   return (
@@ -224,6 +128,11 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="flex-1 p-6 overflow-auto">
           <div className="max-w-6xl mx-auto space-y-6">
+            {/* Search Bar */}
+            <div className="py-6 animate-fade-in">
+              <SearchBar onSearch={handleSearch} />
+            </div>
+
             {/* Dark themed table */}
             <div className="bg-gray-900/50 backdrop-blur-lg rounded-xl border border-gray-800 p-6">
               <div className="flex items-center justify-between mb-6">
@@ -322,6 +231,107 @@ const Dashboard = () => {
       </div>
     </div>
   );
+};
+
+function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDetails }) {
+  const [isHovering, setIsHovering] = useState(null);
+
+  return (
+    <div className="bg-gray-900/50 backdrop-blur-lg border border-gray-800 rounded-xl p-4 mb-4 hover:border-purple-500/50 transition-all duration-300">
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-4">
+        <div className="p-2 rounded-full bg-gray-800/50">
+          <Activity className="w-4 h-4 text-[#FF2D55]" />
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold text-white">Activity</h3>
+          <p className="text-xs text-gray-400">Today's Progress</p>
+        </div>
+      </div>
+
+      {/* Metrics */}
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        {metrics.map((metric) => (
+          <div
+            key={metric.label}
+            className="relative flex flex-col items-center"
+            onMouseEnter={() => setIsHovering(metric.label)}
+            onMouseLeave={() => setIsHovering(null)}
+          >
+            <div className="relative w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-2 border-gray-800/50" />
+              <div
+                className={cn(
+                  "absolute inset-0 rounded-full border-2 transition-all duration-500",
+                  isHovering === metric.label && "scale-105",
+                )}
+                style={{
+                  borderColor: METRIC_COLORS[metric.label],
+                  clipPath: `polygon(0 0, 100% 0, 100% ${metric.trend}%, 0 ${metric.trend}%)`,
+                }}
+              />
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-sm font-bold text-white">{metric.value}</span>
+                <span className="text-xs text-gray-400">{metric.unit}</span>
+              </div>
+            </div>
+            <span className="mt-2 text-xs font-medium text-gray-300">{metric.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Goals Section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="flex items-center gap-2 text-sm font-medium text-gray-300">
+            <Target className="w-4 h-4" />
+            Today's Goals
+          </h4>
+          <button
+            onClick={onAddGoal}
+            className="p-1 rounded-full hover:bg-gray-800 transition-colors"
+          >
+            <Plus className="w-4 h-4 text-gray-400" />
+          </button>
+        </div>
+
+        <div className="space-y-2">
+          {dailyGoals.map((goal) => (
+            <button
+              key={goal.id}
+              onClick={() => onToggleGoal(goal.id)}
+              className="w-full flex items-center gap-2 p-2 rounded-lg bg-gray-800/50 hover:bg-gray-800 transition-all"
+            >
+              <CheckCircle2
+                className={cn("w-4 h-4", goal.isCompleted ? "text-emerald-500" : "text-gray-600")}
+              />
+              <span className={cn(
+                "text-xs",
+                goal.isCompleted ? "text-gray-400 line-through" : "text-gray-300"
+              )}>
+                {goal.title}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* View Details Button */}
+      <button
+        onClick={onViewDetails}
+        className="mt-4 w-full flex items-center justify-center gap-2 p-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
+      >
+        View Activity Details
+        <ArrowUpRight className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
+const METRIC_COLORS = {
+  Mathematics: "#FF2D55",
+  Physics: "#2CD758",
+  Chemistry: "#007AFF",
 };
 
 export default Dashboard;
