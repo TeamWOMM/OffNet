@@ -1,4 +1,4 @@
-// File: C:\Users\ASUS\OneDrive\Desktop\OffNet\OffNet\app\dashboard\layout.js
+// File: /app/app/dashboard/layout.js
 import * as entry from '../../../../app/dashboard/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

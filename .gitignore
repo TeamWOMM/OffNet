@@ -17,4 +17,5 @@ frontend/.vercel
 
 backend/node_modules
 frontend/node_modules
+frontend/.next
 .idea/workspace.xml
