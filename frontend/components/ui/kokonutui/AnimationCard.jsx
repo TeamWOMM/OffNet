@@ -93,7 +93,6 @@ const AnimatedCard = () => {
             </button>
           </div>
         </div>
-
         {/* Custom Graph Section */}
         {showGraph && (
           <div className="w-full bg-white p-6 rounded-lg animate-fadeIn">

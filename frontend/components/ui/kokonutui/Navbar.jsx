@@ -1,4 +1,4 @@
-'useclient';
+'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
@@ -13,17 +13,13 @@ const Navbar = () => {
     const controlNavbar = () => {
       const currentScrollY = window.scrollY;
       
-      // Determine scroll direction and visibility
       if (currentScrollY > lastScrollY) {
         setIsVisible(false);
       } else {
         setIsVisible(true);
       }
 
-      // Update last scroll position
       setLastScrollY(currentScrollY);
-      
-      // Update background transparency
       setIsScrolled(currentScrollY > 50);
     };
 
@@ -125,15 +121,12 @@ const Navbar = () => {
                 />
               </svg>
             </button>
-            {/* <button
-              onClick={handleDashboardAccess}
-              className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200 transition-colors"
+            <Link
+              href="/dashboard"
+              className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200 transition-colors transform hover:scale-105 duration-300"
             >
-              Go to Dashboard
-            </button>
-            <button className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200 transition-colors">
-              Sign In
-            </button> */}
+              Dashboard
+            </Link>
           </div>
         </div>
 
@@ -162,23 +155,16 @@ const Navbar = () => {
               <button className="w-full text-left px-3 py-2 text-white hover:text-gray-300 transition-colors">
                 Search
               </button>
-              <button
-                onClick={handleDashboardAccess}
-                className="w-full text-left px-3 py-2 text-white hover:text-gray-300 transition-colors"
+              <Link
+                href="/dashboard"
+                className="block px-3 py-2 text-white hover:text-gray-300 transition-colors"
               >
-                Go to Dashboard
-              </button>
-              <button className="w-full text-left px-3 py-2 text-white hover:text-gray-300 transition-colors">
-                Sign In
-              </button>
+                Dashboard
+              </Link>
             </div>
           </div>
         )}
       </div>
-      <Link
-      href="/dashboard"
-      className="text-gray-800 hover:text-blue-600 px-4 py-2 rounded-lg transition-colors duration-300"
-      >Dashboard</Link>
     </nav>
   );
 };
