@@ -1,4 +1,4 @@
-
+#boilerplate
 # Logs
 logs
 *.log
@@ -15,7 +15,10 @@ frontend/.vercel
 
 /node_modules
 
+
+#custom
 backend/node_modules
 frontend/node_modules
 frontend/.next
-.idea/workspace.xml
+
+.idea
