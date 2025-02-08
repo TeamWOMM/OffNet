@@ -31,7 +31,7 @@ const METRIC_COLORS = {
   Stand: "#007AFF",
 };
 // handel all js
-const socket = new WebSocket('ws://120.0.0.1:5000');
+const socket = new WebSocket('ws://120.0.0.1:5000/api');
 
 // Connection opened
 socket.addEventListener('open', function (event) {

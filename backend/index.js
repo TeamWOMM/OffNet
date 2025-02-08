@@ -1,16 +1,19 @@
-const express = require('express');
-const { Server } = require('socket.io');
+// const express = require('express');
+// const { Server } = require('socket.io');
 const http = require('http');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const axios = require('axios');
 const path = require('path');
 
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 5000, path: '/api' });
+
 puppeteer.use(StealthPlugin());
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
+// const app = express();
+// const server = http.createServer(app);
+// const io = new Server(server);
 
 let pendingRequests = [
     { id: 1, query: "machine learning" },
@@ -120,22 +123,22 @@ const processPendingRequests = async () => {
 };
 
 // WebSocket to Receive New Queries
-io.on('connection', (socket) => {
-    console.log("⚡ New client connected!");
+// io.on('connection', (socket) => {
+//     console.log("⚡ New client connected!");
 
-    socket.on('new_query', (data) => {
-        console.log(`📩 Received new query: ${data.query}`);
+//     socket.on('new_query', (data) => {
+//         console.log(`📩 Received new query: ${data.query}`);
 
-        const newRequest = { id: pendingRequests.length + 1, query: data.query };
-        pendingRequests.push(newRequest);
+//         const newRequest = { id: pendingRequests.length + 1, query: data.query };
+//         pendingRequests.push(newRequest);
 
-        processPendingRequests();
-    });
+//         processPendingRequests();
+//     });
 
-    socket.on('disconnect', () => {
-        console.log("🔌 Client disconnected.");
-    });
-});
+//     socket.on('disconnect', () => {
+//         console.log("🔌 Client disconnected.");
+//     });
+// });
 
 // Cleanup Function
 const cleanup = async () => {
@@ -153,7 +156,26 @@ process.on('SIGTERM', cleanup);
 const INTERVAL = 5000;
 setInterval(processPendingRequests, INTERVAL);
 
-const PORT = 5000;
-server.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+// const PORT = 5000;
+// server.listen(PORT, () => {
+//     console.log(`🚀 Server running on http://localhost:${PORT}`);
+// });
+
+
+
+wss.on('connection', function connection(ws) {
+    console.log('A new client connected');
+  
+    ws.on('message', function incoming(message) {
+      console.log('received: %s', message);
+      ws.send('Hello Client!');
+    });
+  
+    ws.on('close', function close() {
+      console.log('Client disconnected');
+    });
+  
+    ws.on('error', function error(err) {
+      console.error('WebSocket error: ', err);
+    });
+  });
