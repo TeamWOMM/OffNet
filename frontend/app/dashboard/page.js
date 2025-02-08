@@ -22,8 +22,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/kokonutui/tables";
+import RouteTo from '@/hooks/routerTo';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
+
 
 const Dashboard = () => {
   const router = useRouter();
@@ -233,6 +235,24 @@ const Dashboard = () => {
       </div>
     </div>
   );
+
+
+const { io } = require("socket.io-client");
+const socket = io('http://localhost:5000/api');
+
+// client-side
+socket.on("connect", () => {
+  console.log(socket.id); // x8WIv7-mJelg7on_ALbx
+});
+
+socket.on("disconnect", () => {
+  console.log(socket.id); // undefined
+});
+
+const METRIC_COLORS = {
+  Move: "#FF2D55",
+  Exercise: "#2CD758",
+  Stand: "#007AFF",
 };
 
 function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDetails }) {
@@ -326,10 +346,173 @@ function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDeta
   );
 }
 
-const METRIC_COLORS = {
-  Mathematics: "#FF2D55",
-  Physics: "#2CD758",
-  Chemistry: "#007AFF",
+const Dashboard = () => {
+  const router = useRouter();
+  const [activeFeature, setActiveFeature] = useState('tutor');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(true);
+  const [goals, setGoals] = useState([
+    { id: "1", title: "30min Morning Yoga", isCompleted: true },
+    { id: "2", title: "10k Steps", isCompleted: false },
+    { id: "3", title: "Drink 2L Water", isCompleted: true },
+  ]);
+
+  const [metrics] = useState([
+    { label: "Move", value: "420", trend: 85, unit: "cal" },
+    { label: "Exercise", value: "35", trend: 70, unit: "min" },
+    { label: "Stand", value: "10", trend: 83, unit: "hrs" },
+  ]);
+
+  let [mainContent, setMainContent] = useState();
+  RouteTo('table', setMainContent);
+
+  // Sample table data
+  const tableData = [
+    { id: 1, subject: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
+    { id: 2, subject: "Physics", progress: "72%", status: "Need Focus", lastActivity: "1d ago" },
+    { id: 3, subject: "Chemistry", progress: "93%", status: "Excellent", lastActivity: "5h ago" },
+  ];
+
+  const features = [
+    { id: 'tutor', name: 'AI Tutor', icon: '🎓' },
+    { id: 'notebook', name: 'Notebook Generation', icon: '📓' },
+    { id: 'pdf', name: 'Content PDF', icon: '📄' }
+  ];
+
+  const handleToggleGoal = (goalId) => {
+    setGoals(prev => prev.map(goal => 
+      goal.id === goalId ? { ...goal, isCompleted: !goal.isCompleted } : goal
+    ));
+  };
+
+  const handleAddGoal = () => {
+    setGoals(prev => [...prev, {
+      id: `${prev.length + 1}`,
+      title: `New Goal ${prev.length + 1}`,
+      isCompleted: false
+    }]);
+  };
+
+  const handleViewDetails = () => {
+    console.log("Viewing details");
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-3xl animate-pulse -top-48 -left-48" />
+        <div className="absolute w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl animate-pulse -bottom-48 -right-48" />
+        <div className="absolute w-[800px] h-[800px] bg-purple-500/5 rounded-full blur-3xl animate-pulse top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+      </div>
+
+      {/* Header */}
+      <header className="bg-gray-900/50 backdrop-blur-lg border-b border-gray-800 p-4 relative z-10">
+        <nav className="flex justify-between items-center max-w-7xl mx-auto">
+          <Link href="/" className="text-xl font-bold text-white hover:text-purple-400 transition-colors duration-300">
+            OffNet
+          </Link>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center bg-gray-800/80 px-4 py-2 rounded-full border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300">
+              <Coins className="text-purple-400 w-5 h-5 mr-2" />
+              <span className="font-semibold text-white">2,500</span>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      <div className="flex h-[calc(100vh-4rem)]">
+        {/* Left Sidebar */}
+        <div className="w-56 bg-gray-900/50 backdrop-blur-lg border-r border-gray-800">
+          <div className="p-4">
+            <h2 className="text-xl font-bold text-white mb-6">Features</h2>
+            <div className="space-y-2">
+              {features.map((feature) => (
+                <button
+                  key={feature.id}
+                  onClick={() => setActiveFeature(feature.id)}
+                  className={`w-full px-4 py-3 rounded-lg flex items-center space-x-3 transition-all duration-300 ${
+                    activeFeature === feature.id
+                      ? 'bg-purple-500/20 text-white border border-purple-500/50 shadow-lg shadow-purple-500/20'
+                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-white border border-transparent'
+                  }`}
+                >
+                  <span className="text-xl">{feature.icon}</span>
+                  <span>{feature.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        {mainContent}
+        {/* Right Sidebar */}
+        <div className="w-80 bg-gray-900/50 backdrop-blur-lg border-l border-gray-800 p-4">
+          {/* Activity Card */}
+          <ActivityCard
+            metrics={metrics}
+            dailyGoals={goals}
+            onAddGoal={handleAddGoal}
+            onToggleGoal={handleToggleGoal}
+            onViewDetails={handleViewDetails}
+          />
+
+          {/* Chat History */}
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-purple-400" />
+                Chat History
+              </h3>
+              <button 
+                onClick={() => setIsChatOpen(!isChatOpen)}
+                className="text-gray-400 hover:text-white transition-colors duration-300"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            
+            {/* Chat Items */}
+            <div className="space-y-2">
+              {[
+                {
+                  id: 1,
+                  question: "How do I solve quadratic equations?",
+                  timestamp: "2 hours ago",
+                  feature: "tutor"
+                },
+                {
+                  id: 2,
+                  question: "Generate notes for World War II",
+                  timestamp: "3 hours ago",
+                  feature: "notebook"
+                },
+                {
+                  id: 3,
+                  question: "Convert my biology notes to PDF",
+                  timestamp: "1 day ago",
+                  feature: "pdf"
+                }
+              ].map((chat) => (
+                <div
+                  key={chat.id}
+                  className="p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 border border-gray-800 hover:border-purple-500/50 transition-all duration-300 cursor-pointer group"
+                >
+                  <p className="font-medium text-sm text-gray-300 group-hover:text-white mb-1">{chat.question}</p>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-purple-400 group-hover:text-purple-300">{chat.feature}</span>
+                    <span className="text-gray-500 group-hover:text-gray-400">{chat.timestamp}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Dashboard;
+
