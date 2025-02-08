@@ -30,6 +30,44 @@ const METRIC_COLORS = {
   Exercise: "#2CD758",
   Stand: "#007AFF",
 };
+// handel all js
+const socket = new WebSocket('ws://120.0.0.1:5000');
+
+// Connection opened
+socket.addEventListener('open', function (event) {
+    console.log('Connected to the WebSocket server');
+    socket.send('Hello Server!');
+});
+
+// Listen for messages
+socket.addEventListener('message', function (event) {
+    console.log('Message from server ', event.data);
+});
+
+// Handle errors
+socket.addEventListener('error', function (event) {
+    console.error('WebSocket error: ', event);
+});
+
+// Connection closed
+socket.addEventListener('close', function (event) {
+    console.log('Disconnected from the WebSocket server');
+});
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDetails }) {
   const [isHovering, setIsHovering] = useState(null);
@@ -295,3 +333,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
