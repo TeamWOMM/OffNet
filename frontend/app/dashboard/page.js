@@ -28,7 +28,7 @@ const cn = (...classes) => classes.filter(Boolean).join(' ');
 const Dashboard = () => {
   const router = useRouter();
   const [activeFeature, setActiveFeature] = useState('tutor');
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGenerating] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [goals, setGoals] = useState([
     { id: "1", title: "Chemical Equations", isCompleted: true },
@@ -42,7 +42,6 @@ const Dashboard = () => {
     { label: "Chemistry", value: "68", trend: 83, unit: "%" },
   ]);
 
-  // Sample table data
   const tableData = [
     { id: 1, subject: "Mathematics", progress: "85%", status: "On Track", lastActivity: "2h ago" },
     { id: 2, subject: "Physics", progress: "72%", status: "Need Focus", lastActivity: "1d ago" },
@@ -78,153 +77,156 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-3xl animate-pulse -top-48 -left-48" />
-        <div className="absolute w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl animate-pulse -bottom-48 -right-48" />
-        <div className="absolute w-[800px] h-[800px] bg-purple-500/5 rounded-full blur-3xl animate-pulse top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-      </div>
-
-      {/* Header */}
-      <header className="bg-gray-900/50 backdrop-blur-lg border-b border-gray-800 p-4 relative z-10">
-        <nav className="flex justify-between items-center max-w-7xl mx-auto">
-          <Link href="/" className="text-xl font-bold text-white hover:text-purple-400 transition-colors duration-300">
-            OffNet
-          </Link>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center bg-gray-800/80 px-4 py-2 rounded-full border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300">
-              <Coins className="text-purple-400 w-5 h-5 mr-2" />
-              <span className="font-semibold text-white">2,500</span>
-            </div>
-          </div>
-        </nav>
-      </header>
-
-      <div className="flex h-[calc(100vh-4rem)]">
-        {/* Left Sidebar */}
-        <div className="w-56 bg-gray-900/50 backdrop-blur-lg border-r border-gray-800">
-          <div className="p-4">
-            <h2 className="text-xl font-bold text-white mb-6">Features</h2>
-            <div className="space-y-2">
-              {features.map((feature) => (
-                <button
-                  key={feature.id}
-                  onClick={() => setActiveFeature(feature.id)}
-                  className={`w-full px-4 py-3 rounded-lg flex items-center space-x-3 transition-all duration-300 ${
-                    activeFeature === feature.id
-                      ? 'bg-purple-500/20 text-white border border-purple-500/50 shadow-lg shadow-purple-500/20'
-                      : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-white border border-transparent'
-                  }`}
-                >
-                  <span className="text-xl">{feature.icon}</span>
-                  <span>{feature.name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+    <div className="relative min-h-screen bg-gradient-to-br from-gray-900 to-black">
+      <div className="fixed inset-0"></div>
+      {/* <ParticlesBackground
+        title=""
+        subtitle=""
+        particleCount={1000}
+        noiseIntensity={0.002}
+        particleSize={{ min: 0.2, max: 1 }}
+        className="absolute inset-0 z-0"
+      /> */}
+      
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-3xl animate-pulse -top-48 -left-48" />
+          <div className="absolute w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl animate-pulse -bottom-48 -right-48" />
+          <div className="absolute w-[800px] h-[800px] bg-purple-500/5 rounded-full blur-3xl animate-pulse top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 p-6 overflow-auto">
-          <div className="max-w-6xl mx-auto space-y-6">
-            {/* Search Bar */}
+        <header className="bg-gray-900/50 backdrop-blur-lg border-b border-gray-800 p-4 relative z-10">
+          <nav className="flex justify-between items-center max-w-7xl mx-auto">
+            <Link href="/" className="text-xl font-bold text-white hover:text-purple-400 transition-colors duration-300">
+              OffNet
+            </Link>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center bg-gray-800/80 px-4 py-2 rounded-full border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300">
+                <Coins className="text-purple-400 w-5 h-5 mr-2" />
+                <span className="font-semibold text-white">2,500</span>
+              </div>
+            </div>
+          </nav>
+        </header>
+
+        <div className="flex h-[calc(100vh-4rem)] relative z-20">
+          <div className="w-56 bg-gray-900/50 backdrop-blur-lg border-r border-gray-800">
+            <div className="p-4">
+              <h2 className="text-xl font-bold text-white mb-6">Features</h2>
+              <div className="space-y-2">
+                {features.map((feature) => (
+                  <button
+                    key={feature.id}
+                    onClick={() => setActiveFeature(feature.id)}
+                    className={`w-full px-4 py-3 rounded-lg flex items-center space-x-3 transition-all duration-300 ${
+                      activeFeature === feature.id
+                        ? 'bg-purple-500/20 text-white border border-purple-500/50 shadow-lg shadow-purple-500/20'
+                        : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-white border border-transparent'
+                    }`}
+                  >
+                    <span className="text-xl">{feature.icon}</span>
+                    <span>{feature.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 p-6 overflow-auto">
+            <div className="max-w-6xl mx-auto space-y-6">
+              <div className="bg-gray-900/50 backdrop-blur-lg rounded-xl border border-gray-800 p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <TableIcon className="w-5 h-5 text-purple-400" />
+                    <h2 className="text-xl font-bold text-white">Learning Progress</h2>
+                  </div>
+                </div>
+                
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-gray-800">
+                      <TableHead className="text-purple-400">Subject</TableHead>
+                      <TableHead className="text-purple-400">Progress</TableHead>
+                      <TableHead className="text-purple-400">Status</TableHead>
+                      <TableHead className="text-purple-400">Last Activity</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {tableData.map((row) => (
+                      <TableRow key={row.id} className="border-gray-800">
+                        <TableCell className="font-medium text-gray-300">{row.subject}</TableCell>
+                        <TableCell className="text-gray-400">{row.progress}</TableCell>
+                        <TableCell className="text-gray-400">{row.status}</TableCell>
+                        <TableCell className="text-gray-400">{row.lastActivity}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
             <div className="py-6 animate-fade-in">
               <SearchBar onSearch={handleSearch} />
             </div>
+          </div>
 
-            {/* Dark themed table */}
-            <div className="bg-gray-900/50 backdrop-blur-lg rounded-xl border border-gray-800 p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <TableIcon className="w-5 h-5 text-purple-400" />
-                  <h2 className="text-xl font-bold text-white">Learning Progress</h2>
-                </div>
+          <div className="w-80 bg-gray-900/50 backdrop-blur-lg border-l border-gray-800 p-4">
+            <ActivityCard
+              metrics={metrics}
+              dailyGoals={goals}
+              onAddGoal={handleAddGoal}
+              onToggleGoal={handleToggleGoal}
+              onViewDetails={handleViewDetails}
+            />
+
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-purple-400" />
+                  Chat History
+                </h3>
+                <button 
+                  onClick={() => setIsChatOpen(!isChatOpen)}
+                  className="text-gray-400 hover:text-white transition-colors duration-300"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
               
-              <Table>
-                <TableHeader>
-                  <TableRow className="border-gray-800">
-                    <TableHead className="text-purple-400">Subject</TableHead>
-                    <TableHead className="text-purple-400">Progress</TableHead>
-                    <TableHead className="text-purple-400">Status</TableHead>
-                    <TableHead className="text-purple-400">Last Activity</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {tableData.map((row) => (
-                    <TableRow key={row.id} className="border-gray-800">
-                      <TableCell className="font-medium text-gray-300">{row.subject}</TableCell>
-                      <TableCell className="text-gray-400">{row.progress}</TableCell>
-                      <TableCell className="text-gray-400">{row.status}</TableCell>
-                      <TableCell className="text-gray-400">{row.lastActivity}</TableCell>
-                    </TableRow>
+              {isChatOpen && (
+                <div className="space-y-2">
+                  {[
+                    {
+                      id: 1,
+                      question: "How do I solve quadratic equations?",
+                      timestamp: "2 hours ago",
+                      feature: "tutor"
+                    },
+                    {
+                      id: 2,
+                      question: "Generate notes for World War II",
+                      timestamp: "3 hours ago",
+                      feature: "notebook"
+                    },
+                    {
+                      id: 3,
+                      question: "Convert my biology notes to PDF",
+                      timestamp: "1 day ago",
+                      feature: "pdf"
+                    }
+                  ].map((chat) => (
+                    <div
+                      key={chat.id}
+                      className="p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 border border-gray-800 hover:border-purple-500/50 transition-all duration-300 cursor-pointer group"
+                    >
+                      <p className="font-medium text-sm text-gray-300 group-hover:text-white mb-1">{chat.question}</p>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-purple-400 group-hover:text-purple-300">{chat.feature}</span>
+                        <span className="text-gray-500 group-hover:text-gray-400">{chat.timestamp}</span>
+                      </div>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Sidebar */}
-        <div className="w-80 bg-gray-900/50 backdrop-blur-lg border-l border-gray-800 p-4">
-          {/* Activity Card */}
-          <ActivityCard
-            metrics={metrics}
-            dailyGoals={goals}
-            onAddGoal={handleAddGoal}
-            onToggleGoal={handleToggleGoal}
-            onViewDetails={handleViewDetails}
-          />
-
-          {/* Chat History */}
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-purple-400" />
-                Chat History
-              </h3>
-              <button 
-                onClick={() => setIsChatOpen(!isChatOpen)}
-                className="text-gray-400 hover:text-white transition-colors duration-300"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            
-            {/* Chat Items */}
-            <div className="space-y-2">
-              {[
-                {
-                  id: 1,
-                  question: "How do I solve quadratic equations?",
-                  timestamp: "2 hours ago",
-                  feature: "tutor"
-                },
-                {
-                  id: 2,
-                  question: "Generate notes for World War II",
-                  timestamp: "3 hours ago",
-                  feature: "notebook"
-                },
-                {
-                  id: 3,
-                  question: "Convert my biology notes to PDF",
-                  timestamp: "1 day ago",
-                  feature: "pdf"
-                }
-              ].map((chat) => (
-                <div
-                  key={chat.id}
-                  className="p-3 rounded-lg bg-gray-800/50 hover:bg-gray-800 border border-gray-800 hover:border-purple-500/50 transition-all duration-300 cursor-pointer group"
-                >
-                  <p className="font-medium text-sm text-gray-300 group-hover:text-white mb-1">{chat.question}</p>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-purple-400 group-hover:text-purple-300">{chat.feature}</span>
-                    <span className="text-gray-500 group-hover:text-gray-400">{chat.timestamp}</span>
-                  </div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
@@ -238,7 +240,6 @@ function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDeta
 
   return (
     <div className="bg-gray-900/50 backdrop-blur-lg border border-gray-800 rounded-xl p-4 mb-4 hover:border-purple-500/50 transition-all duration-300">
-      {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <div className="p-2 rounded-full bg-gray-800/50">
           <Activity className="w-4 h-4 text-[#FF2D55]" />
@@ -249,7 +250,6 @@ function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDeta
         </div>
       </div>
 
-      {/* Metrics */}
       <div className="grid grid-cols-3 gap-2 mb-4">
         {metrics.map((metric) => (
           <div
@@ -280,7 +280,6 @@ function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDeta
         ))}
       </div>
 
-      {/* Goals Section */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h4 className="flex items-center gap-2 text-sm font-medium text-gray-300">
@@ -316,7 +315,6 @@ function ActivityCard({ metrics, dailyGoals, onAddGoal, onToggleGoal, onViewDeta
         </div>
       </div>
 
-      {/* View Details Button */}
       <button
         onClick={onViewDetails}
         className="mt-4 w-full flex items-center justify-center gap-2 p-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all"
