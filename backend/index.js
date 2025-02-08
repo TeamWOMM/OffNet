@@ -60,7 +60,7 @@ const initBrowser = async () => {
 const scrapePDFs = async (query) => {
     let page = null;
     try {
-        console.log(🔍 Processing query: ${query});
+        console.log(`🔍 Processing query: ${query}`);
         const browser = await initBrowser();
         page = await browser.newPage();
 
@@ -75,7 +75,7 @@ const scrapePDFs = async (query) => {
             }
         });
 
-        const searchURL = https://www.bing.com/search?q=${encodeURIComponent(query + " filetype:pdf")};
+        const searchURL = `https://www.bing.com/search?q=${encodeURIComponent(query + " filetype:pdf")}`;
         await page.goto(searchURL, { waitUntil: 'networkidle0', timeout: 30000 });
 
         const pdfLinks = await page.evaluate(() => {
@@ -85,10 +85,10 @@ const scrapePDFs = async (query) => {
                 .slice(0, 5);
         });
 
-        console.log(✅ Found ${pdfLinks.length} PDF links for "${query}":, pdfLinks);
+        console.log(`✅ Found ${pdfLinks.length} PDF links for "${query}":`, pdfLinks);
         return pdfLinks;
     } catch (error) {
-        console.error(❌ Error processing query "${query}":, error.message);
+        console.error(`❌ Error processing query "${query}":`, error.message);
         return [];
     } finally {
         if (page) await page.close();
@@ -124,7 +124,7 @@ io.on('connection', (socket) => {
     console.log("⚡ New client connected!");
 
     socket.on('new_query', (data) => {
-        console.log(📩 Received new query: ${data.query});
+        console.log(`📩 Received new query: ${data.query}`);
 
         const newRequest = { id: pendingRequests.length + 1, query: data.query };
         pendingRequests.push(newRequest);
@@ -155,5 +155,5 @@ setInterval(processPendingRequests, INTERVAL);
 
 const PORT = 5000;
 server.listen(PORT, () => {
-    console.log("🚀 Server running on http://localhost:${PORT}");
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
