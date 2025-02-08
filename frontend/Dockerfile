@@ -35,7 +35,7 @@ RUN ls -la .next || echo "❌ ERROR: .next build folder missing"
 
 
 # Expose port
-EXPOSE 3000
+EXPOSE 4000
 
 # Start the Next.js application
 CMD ["npm", "run", "dev"]
