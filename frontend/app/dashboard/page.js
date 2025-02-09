@@ -221,7 +221,7 @@ function handleSearch(s) {
 
 
 const {io} = require("socket.io-client");
-const socket = io('http://localhost:5000', {
+const socket = io('http://backend:5000', {
     path: '/api',
     transports: ['websocket', 'polling'],
     reconnectionAttempts: 5,
