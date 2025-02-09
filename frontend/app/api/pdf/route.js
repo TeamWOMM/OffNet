@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(request) {
+export async function GET(request) {
   try {
     // Parse the JSON body from the request
     const body = await request.json();

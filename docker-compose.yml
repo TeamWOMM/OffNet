@@ -1,7 +1,21 @@
 services:
+  # web:
+  #   build: .
+  #   command: npm start
+  #   develop:
+  #     watch:
+  #       - action: sync
+  #         path: ./web
+  #         target: /src/web
+  #         ignore:
+  #           - node_modules/
+  #       - action: rebuild
+  #         path: package.json
   backend:
     build: ./backend
     restart: always
+    ports:
+      - "5000:5000"
     networks:
       - app-network
     volumes:
