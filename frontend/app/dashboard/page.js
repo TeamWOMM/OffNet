@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+import SearchBar from '@/components/ui/kokonutui/SearchComponent';
+
+
 import {
   Coins,
   MessageSquare,
@@ -390,7 +393,12 @@ useRouteTo('table', setMainContent, tableData);
         </div>
 
         {/* Main Content */}
+        <div className='w-full h-screen'>
         {mainContent}
+
+        <SearchBar className='poition-fixed bottom-20 ' onSearch={console.log} />
+
+        </div>
         {/* Right Sidebar */}
         <div className="w-80 bg-gray-900/50 backdrop-blur-lg border-l border-gray-800 p-4">
           {/* Activity Card */}

@@ -69,7 +69,7 @@ export default function _Table({ data=tableData }){
                 </div>
               </div>
               <div className="py-6 animate-fade-in">
-              <SearchBar onSearch={handleSearch} />
+              
           </div>
             </div>
     
