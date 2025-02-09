@@ -395,9 +395,7 @@ useRouteTo('table', setMainContent, tableData);
         {/* Main Content */}
         <div className='w-full h-screen'>
         {mainContent}
-
         <SearchBar className='poition-fixed bottom-20 ' onSearch={console.log} />
-
         </div>
         {/* Right Sidebar */}
         <div className="w-80 bg-gray-900/50 backdrop-blur-lg border-l border-gray-800 p-4">
