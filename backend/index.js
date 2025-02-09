@@ -16,7 +16,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     path: '/api',
     cors: {
-        origin: "http://localhost:5000", // ✅ Keep same frontend compatibility
+        origin: "http://localhost:5000", // ✅ Frontend compatibility
         methods: ["GET", "POST"],
         credentials: true
     }
@@ -24,17 +24,19 @@ const io = new Server(server, {
 
 app.use(cors());
 
-// 📂 Persistent Storage for Requests & Scrapes
+// 📂 Persistent Storage
 const DATA_DIR = path.join(__dirname, 'data');
 const REQUESTS_FILE = path.join(DATA_DIR, 'requests.json');
 const SCRAPES_FILE = path.join(DATA_DIR, 'scrapes.json');
+const RESOURCES_DIR = path.join(__dirname, 'resources');
 
-// ✅ Ensure storage directory & files exist
+// ✅ Ensure directories & files exist
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
 if (!fs.existsSync(REQUESTS_FILE)) fs.writeFileSync(REQUESTS_FILE, JSON.stringify([], null, 2));
 if (!fs.existsSync(SCRAPES_FILE)) fs.writeFileSync(SCRAPES_FILE, JSON.stringify([], null, 2));
+if (!fs.existsSync(RESOURCES_DIR)) fs.mkdirSync(RESOURCES_DIR, { recursive: true });
 
-// ✅ Load pending requests from file
+// ✅ Load pending requests
 let pendingRequests = JSON.parse(fs.readFileSync(REQUESTS_FILE));
 const processedRequests = new Set();
 let isProcessing = false;
@@ -85,7 +87,30 @@ const isPdfCached = (pdfLink) => {
     return scrapes.some(entry => entry.pdflink === pdfLink);
 };
 
-// 📄 Parse and store PDF asynchronously without blocking response
+// 📄 Download & Store PDF in `/resources`
+const downloadPdf = async (pdfLink, pdfName) => {
+    try {
+        const response = await axios({
+            method: 'GET',
+            url: pdfLink,
+            responseType: 'stream'
+        });
+
+        const filePath = path.join(RESOURCES_DIR, pdfName);
+        const writer = fs.createWriteStream(filePath);
+
+        response.data.pipe(writer);
+
+        return new Promise((resolve, reject) => {
+            writer.on('finish', () => resolve(filePath));
+            writer.on('error', reject);
+        });
+    } catch (error) {
+        console.error(`❌ Error downloading PDF: ${pdfLink}`, error.message);
+    }
+};
+
+// 📄 Parse & Store PDF with Download Link
 const parseAndStorePdf = async (pdfLink) => {
     if (isPdfCached(pdfLink)) {
         console.log(`🔹 Skipping cached PDF: ${pdfLink}`);
@@ -94,17 +119,15 @@ const parseAndStorePdf = async (pdfLink) => {
 
     try {
         console.log(`📄 Downloading & parsing: ${pdfLink}`);
-        const response = await crawler(pdfLink);
-        if (!response.text) throw new Error("Empty PDF response");
-
-        const pdfText = response.text.trim().substring(0, 5000); // Limit to first 5000 chars
         const pdfName = pdfLink.split('/').pop();
+        const localFilePath = await downloadPdf(pdfLink, pdfName);
+
+        if (!localFilePath) throw new Error("Failed to download PDF");
 
         const pdfData = {
-            uuid: generateUniqueId(), // ✅ Using custom function instead of `uuid`
-            pdfname: pdfName,
-            pdflink: pdfLink,
-            pdftext: pdfText
+            resource_id: generateUniqueId(),
+            resource_name: pdfName,
+            link: `http://localhost:5000/resource/${pdfName}`
         };
 
         const scrapes = JSON.parse(fs.readFileSync(SCRAPES_FILE));
@@ -113,8 +136,8 @@ const parseAndStorePdf = async (pdfLink) => {
 
         console.log(`✅ Stored PDF: ${pdfName}`);
 
-        // 🔥 Notify frontend when text is ready
-        io.emit("pdf_parsed", pdfData);
+        // 🔥 Notify frontend
+        io.emit("scrape_result", pdfData);
     } catch (error) {
         console.error(`❌ Error parsing PDF: ${pdfLink}`, error.message);
     }
@@ -150,9 +173,6 @@ const scrapePDFs = async (query) => {
         });
 
         console.log(`✅ Found ${pdfLinks.length} PDFs for "${query}"`);
-
-        // ✅ Immediately send PDF links to frontend
-        io.emit("scrape_result", { query, links: pdfLinks });
 
         // ✅ Process PDFs asynchronously
         pdfLinks.forEach(parseAndStorePdf);
@@ -191,7 +211,14 @@ io.on('connection', (socket) => {
         pendingRequests.push({ id: pendingRequests.length + 1, query: data.query });
         processPendingRequests();
     });
+
+    // Send existing scraped resources when a client connects
+    const scrapes = JSON.parse(fs.readFileSync(SCRAPES_FILE));
+    socket.emit("existing_resources", scrapes);
 });
+
+// 📂 Serve Static Files
+app.use('/resource', express.static(RESOURCES_DIR));
 
 // 🧹 Cleanup
 process.on('SIGINT', async () => {
