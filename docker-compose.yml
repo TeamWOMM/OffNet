@@ -5,11 +5,15 @@ services:
     networks:
       - app-network
     volumes:
-      - ./backend:/app  # Syncs local backend code with the container
+      - ./backend:/app  # Sync local backend code with the container
       - /app/node_modules  # Prevents overwriting node_modules
+      - backend_data:/app/data  # Persistent storage for requests.json & scrapes.json
     environment:
       - NODE_ENV=development
-    command: npm run dev  # Enables live-reloading (uses nodemon)
+      - OLLAMA_API=http://ollama:11434  # Connect backend to Ollama
+    command: npm run dev
+    depends_on:
+      - ollama
 
   frontend:
     build: ./frontend
@@ -22,10 +26,29 @@ services:
     environment:
       - NODE_ENV=development
     volumes:
-      - ./frontend:/app  # Syncs local frontend code with the container
-      - /app/node_modules  # Prevents overwriting node_modules
-    command: npm run dev  # Enables Next.js hot reloading
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  ollama:
+    image: ollama/ollama
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama  # Persist Ollama models
+    networks:
+      - app-network
+    entrypoint: [ "/bin/sh", "-c" ]
+    command:
+      - |
+        ollama list | grep -q 'deepseek-r1:8b' || ollama pull deepseek-r1:8b
+        ollama serve
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  ollama_data:  # Persistent volume for Ollama models
+  backend_data:  # Persistent volume for requests.json & scrapes.json
