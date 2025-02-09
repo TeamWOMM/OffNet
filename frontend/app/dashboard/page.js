@@ -266,12 +266,13 @@ let [mainContent, setMainContent] = useState();
 useEffect(() => {
 
   setTimeout(()=>{
-    socket.emit('message', 'tableData');
+    
   },1000);
   socket.on("connect", () => {
-    console.log("Connected to server with ID:", socket.id)
+    console.log("Connected to server with ID:", socket.id);
   });
-
+  socket.emit('message', 'tableData');
+  
   socket.on("message", (message) => {
     try {
       const parsedData = JSON.parse(message);
