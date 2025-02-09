@@ -1,1 +1,7 @@
-[]
+[
+  {
+    "resource_id": "123456-789",
+    "resource_name": "example.pdf",
+    "link": "http://localhost:5000/resource/example.pdf"
+  }
+]
