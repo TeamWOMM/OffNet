@@ -13,13 +13,10 @@ services:
       - OLLAMA_API=https://ollama:11434  # Connect backend to Ollama via HTTPS
       - WS_ORIGIN=http://frontend:4000  # Allow WebSocket connections from frontend
     command: npm run dev
-    depends_on:
-      ollama:
-        condition: service_healthy  # Ensures Ollama is ready before backend starts
     ports:
       - "5000:5000"  # Expose WebSocket server
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/api"]
+      test: [ "CMD", "curl", "-f", "http://localhost:5000/api" ]
       interval: 10s
       retries: 5
       start_period: 10s
@@ -29,9 +26,6 @@ services:
     restart: always
     ports:
       - "4000:4000"
-    depends_on:
-      backend:
-        condition: service_healthy  # Wait for backend to be ready
     networks:
       - app-network
     environment:
@@ -57,7 +51,7 @@ services:
         ollama list | grep -q 'deepseek-r1:8b' || ollama pull deepseek-r1:8b
         ollama serve
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:11434"]
+      test: [ "CMD", "curl", "-f", "http://localhost:11434" ]
       interval: 10s
       retries: 5
       start_period: 10s
