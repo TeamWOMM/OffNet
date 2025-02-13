@@ -86,10 +86,3 @@ This will spin up the **frontend**, **backend**, and **database** in a single co
 
 ## 📜 License
 This project is licensed under the MIT License.
-
-## 🙌 Contributors
-- **Jatin** (Your GitHub Profile Link)
-- Add other team members here
-
----
-Feel free to contribute, raise issues, or suggest features! 🚀
